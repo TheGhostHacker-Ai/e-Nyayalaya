@@ -220,51 +220,78 @@ export default function Auth({ onLogin, onClose }) {
         }
 
         let assignedOrgId = orgId;
-        if (cadreType === 'standard' && orgType !== 'supreme_court') {
-          const isPolice = orgType === 'police_station';
-          const cleanOrgName = isPolice 
-            ? (selectedPoliceStation === 'Other' ? normalizeStationName(customPoliceStation) : normalizeStationName(selectedPoliceStation))
-            : orgName.trim();
-
-          if (!cleanOrgName) {
-            throw new Error("Please select or enter your official Station / Court Unit Name.");
-          }
-
-          // Check if organisation already exists in database
-          const { data: orgsData } = await supabase
-            .from('organisations')
-            .select('id, name, district, state, org_type');
-
-          let existingOrg = null;
-          if (orgsData && orgsData.length > 0) {
-            existingOrg = orgsData.find(o => 
-              (o.name && o.name.toLowerCase().trim() === cleanOrgName.toLowerCase().trim()) ||
-              (o.name && o.name.toLowerCase().includes(cleanOrgName.toLowerCase())) ||
-              (cleanOrgName.toLowerCase().includes(o.name.toLowerCase()))
-            );
-          }
-
-          if (existingOrg) {
-            assignedOrgId = existingOrg.id;
-          } else {
-            const prefix = isPolice ? 'PS' : (orgType === 'high_court' ? 'HC' : 'CRT');
-            const distCode = (district || 'LKO').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 4);
-            const nameCode = cleanOrgName.toUpperCase().replace(/[^A-Z0-9]/g, '_').substring(0, 12);
-            const generatedCode = `${prefix}_${distCode}_${nameCode}_${Math.floor(100 + Math.random() * 900)}`;
-
-            const { data: newOrg, error: orgError } = await supabase
+        if (cadreType === 'standard') {
+          if (orgType === 'supreme_court') {
+            const cleanOrgName = 'Supreme Court of India';
+            const { data: orgsData } = await supabase
               .from('organisations')
-              .insert([{ 
-                name: cleanOrgName, 
-                code: generatedCode,
-                org_type: orgType, 
-                district: district || 'Lucknow', 
-                state: state || 'Uttar Pradesh' 
-              }])
-              .select()
-              .single();
-            if (orgError) throw orgError;
-            assignedOrgId = newOrg.id;
+              .select('id, name, district, state, org_type')
+              .or('org_type.eq.supreme_court,name.ilike.%Supreme Court%');
+
+            let scOrg = orgsData && orgsData[0];
+            if (scOrg) {
+              assignedOrgId = scOrg.id;
+            } else {
+              const { data: newScOrg, error: scErr } = await supabase
+                .from('organisations')
+                .insert([{ 
+                  name: 'Supreme Court of India', 
+                  code: 'SC_INDIA_APEX', 
+                  org_type: 'supreme_court', 
+                  district: 'New Delhi', 
+                  state: 'National' 
+                }])
+                .select()
+                .single();
+              if (scErr) throw scErr;
+              assignedOrgId = newScOrg.id;
+            }
+          } else {
+            const isPolice = orgType === 'police_station';
+            const cleanOrgName = isPolice 
+              ? (selectedPoliceStation === 'Other' ? normalizeStationName(customPoliceStation) : normalizeStationName(selectedPoliceStation))
+              : orgName.trim();
+
+            if (!cleanOrgName) {
+              throw new Error("Please select or enter your official Station / Court Unit Name.");
+            }
+
+            // Check if organisation already exists in database
+            const { data: orgsData } = await supabase
+              .from('organisations')
+              .select('id, name, district, state, org_type');
+
+            let existingOrg = null;
+            if (orgsData && orgsData.length > 0) {
+              existingOrg = orgsData.find(o => 
+                (o.name && o.name.toLowerCase().trim() === cleanOrgName.toLowerCase().trim()) ||
+                (o.name && o.name.toLowerCase().includes(cleanOrgName.toLowerCase())) ||
+                (cleanOrgName.toLowerCase().includes(o.name.toLowerCase()))
+              );
+            }
+
+            if (existingOrg) {
+              assignedOrgId = existingOrg.id;
+            } else {
+              const prefix = isPolice ? 'PS' : (orgType === 'high_court' ? 'HC' : 'CRT');
+              const distCode = (district || 'LKO').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 4);
+              const nameCode = cleanOrgName.toUpperCase().replace(/[^A-Z0-9]/g, '_').substring(0, 12);
+              const generatedCode = `${prefix}_${distCode}_${nameCode}_${Math.floor(100 + Math.random() * 900)}`;
+
+              const { data: newOrg, error: orgError } = await supabase
+                .from('organisations')
+                .insert([{ 
+                  name: cleanOrgName, 
+                  code: generatedCode,
+                  org_type: orgType, 
+                  district: district || 'Lucknow', 
+                  state: state || 'Uttar Pradesh' 
+                }])
+                .select()
+                .single();
+              if (orgError) throw orgError;
+              assignedOrgId = newOrg.id;
+            }
           }
         }
 
@@ -576,87 +603,114 @@ export default function Auth({ onLogin, onClose }) {
                   <div>
                     <label className="gov-form-label">Organization Category</label>
                     <select className="gov-input" value={orgType} onChange={e => {
-                      setOrgType(e.target.value);
-                      if (e.target.value === 'police_station') setRole('police_officer');
-                      else setRole('judge');
+                      const selectedVal = e.target.value;
+                      setOrgType(selectedVal);
+                      if (selectedVal === 'police_station') {
+                        setRole('police_officer');
+                      } else if (selectedVal === 'supreme_court') {
+                        setRole('judge');
+                        setState('National');
+                        setDistrict('New Delhi');
+                        setOrgName('Supreme Court of India');
+                        setDesignation("Hon'ble Supreme Court Judge");
+                        setBadgeNo('SC-JDG-001');
+                      } else {
+                        setRole('judge');
+                        if (selectedVal === 'high_court') setDesignation("Hon'ble High Court Judge");
+                        else setDesignation("Judicial Magistrate / Sessions Judge");
+                      }
                     }}>
-                      <option value="police_station">Police Station</option>
-                      <option value="court">District / Sessions Court</option>
+                      <option value="police_station">Police Station (Territorial / Cyber)</option>
+                      <option value="court">District & Sessions Court</option>
                       <option value="high_court">High Court Bench</option>
+                      <option value="supreme_court">Supreme Court of India (Apex National Registry)</option>
                     </select>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                    <div>
-                      <label className="gov-form-label">State / UT</label>
-                      <select className="gov-input" value={state} onChange={e => { 
-                        const nextS = e.target.value;
-                        setState(nextS); 
-                        const dists = getDistrictsForState(nextS);
-                        const firstD = dists[0] || 'Central';
-                        setDistrict(firstD);
-                        const thanas = getPoliceStationsForDistrict(nextS, firstD);
-                        setSelectedPoliceStation(thanas[0] || 'Other');
-                      }}>
-                        {ALL_INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
+                  {orgType === 'supreme_court' ? (
+                    <div style={{ background: '#FAF5E8', border: '1px solid var(--accent)', padding: '0.65rem 0.85rem', borderRadius: '2px', fontSize: '0.8rem', color: '#1B2230' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        ⚖️ Apex Judicial Jurisdiction
+                      </div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--ink-soft)', marginTop: '0.2rem' }}>
+                        National Jurisdiction • Tilak Marg, New Delhi • Apex Appellate Registry under Article 141 of the Constitution
+                      </div>
                     </div>
-                    <div>
-                      <label className="gov-form-label">District</label>
-                      <select className="gov-input" value={district} onChange={e => {
-                        const nextD = e.target.value;
-                        setDistrict(nextD);
-                        const thanas = getPoliceStationsForDistrict(state, nextD);
-                        setSelectedPoliceStation(thanas[0] || 'Other');
-                      }}>
-                        {getDistrictsForState(state).map(d => <option key={d} value={d}>{d}</option>)}
-                      </select>
-                    </div>
-                  </div>
-
-                  {orgType === 'police_station' ? (
+                  ) : (
                     <>
-                      <div>
-                        <label className="gov-form-label">Territorial Police Station *</label>
-                        <select 
-                          className="gov-input" 
-                          value={selectedPoliceStation} 
-                          onChange={e => setSelectedPoliceStation(e.target.value)}
-                          required
-                        >
-                          {getPoliceStationsForDistrict(state, district).map(ps => (
-                            <option key={ps} value={ps}>{ps}</option>
-                          ))}
-                          <option value="Other">Other / Unlisted Police Station</option>
-                        </select>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        <div>
+                          <label className="gov-form-label">State / UT</label>
+                          <select className="gov-input" value={state} onChange={e => { 
+                            const nextS = e.target.value;
+                            setState(nextS); 
+                            const dists = getDistrictsForState(nextS);
+                            const firstD = dists[0] || 'Central';
+                            setDistrict(firstD);
+                            const thanas = getPoliceStationsForDistrict(nextS, firstD);
+                            setSelectedPoliceStation(thanas[0] || 'Other');
+                          }}>
+                            {ALL_INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="gov-form-label">District</label>
+                          <select className="gov-input" value={district} onChange={e => {
+                            const nextD = e.target.value;
+                            setDistrict(nextD);
+                            const thanas = getPoliceStationsForDistrict(state, nextD);
+                            setSelectedPoliceStation(thanas[0] || 'Other');
+                          }}>
+                            {getDistrictsForState(state).map(d => <option key={d} value={d}>{d}</option>)}
+                          </select>
+                        </div>
                       </div>
 
-                      {selectedPoliceStation === 'Other' && (
+                      {orgType === 'police_station' ? (
+                        <>
+                          <div>
+                            <label className="gov-form-label">Territorial Police Station *</label>
+                            <select 
+                              className="gov-input" 
+                              value={selectedPoliceStation} 
+                              onChange={e => setSelectedPoliceStation(e.target.value)}
+                              required
+                            >
+                              {getPoliceStationsForDistrict(state, district).map(ps => (
+                                <option key={ps} value={ps}>{ps}</option>
+                              ))}
+                              <option value="Other">Other / Unlisted Police Station</option>
+                            </select>
+                          </div>
+
+                          {selectedPoliceStation === 'Other' && (
+                            <div>
+                              <label className="gov-form-label">Specify Police Station Name *</label>
+                              <input 
+                                type="text" 
+                                className="gov-input" 
+                                required 
+                                value={customPoliceStation} 
+                                onChange={e => setCustomPoliceStation(e.target.value)} 
+                                placeholder="e.g. Cyber Crime Thana" 
+                              />
+                            </div>
+                          )}
+                        </>
+                      ) : (
                         <div>
-                          <label className="gov-form-label">Specify Police Station Name *</label>
+                          <label className="gov-form-label">Court Bench / Judicial Unit Name *</label>
                           <input 
                             type="text" 
                             className="gov-input" 
                             required 
-                            value={customPoliceStation} 
-                            onChange={e => setCustomPoliceStation(e.target.value)} 
-                            placeholder="e.g. Cyber Crime Thana" 
+                            value={orgName} 
+                            onChange={e => setOrgName(e.target.value)} 
+                            placeholder={orgType === 'high_court' ? "e.g. Allahabad High Court (Lucknow Bench)" : "e.g. Chief Judicial Magistrate Court, Lucknow"} 
                           />
                         </div>
                       )}
                     </>
-                  ) : (
-                    <div>
-                      <label className="gov-form-label">Court Bench / Judicial Unit Name *</label>
-                      <input 
-                        type="text" 
-                        className="gov-input" 
-                        required 
-                        value={orgName} 
-                        onChange={e => setOrgName(e.target.value)} 
-                        placeholder={orgType === 'high_court' ? "e.g. Allahabad High Court (Lucknow Bench)" : "e.g. Chief Judicial Magistrate Court, Lucknow"} 
-                      />
-                    </div>
                   )}
 
                   <div>
@@ -666,6 +720,11 @@ export default function Auth({ onLogin, onClose }) {
                         <>
                           <option value="police_officer">Station Officer</option>
                           <option value="investigating_officer">Investigating Officer (IO)</option>
+                        </>
+                      ) : orgType === 'supreme_court' ? (
+                        <>
+                          <option value="judge">Hon'ble Supreme Court Judge / CJI</option>
+                          <option value="court_clerk">Registrar General / Court Master</option>
                         </>
                       ) : (
                         <>

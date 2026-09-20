@@ -1466,7 +1466,7 @@ Recorded automatically in e-Courts Cryptographic Ledger.`;
                     <Landmark size={18} color="var(--accent)" /> All-India States & Union Territories Grid (Supreme Court Jurisdiction)
                   </h3>
                   <p style={{ fontSize: '0.78rem', color: 'var(--ink-soft)', margin: '0.2rem 0 0 0' }}>
-                    Numbered jurisdiction blocks for all 30 States & UTs. Displays active dockets and appeals/SLPs transferred to the Supreme Court.
+                    Numbered jurisdiction blocks for all 36 States & Union Territories (28 States + 8 UTs). Displays active dockets and appeals/SLPs transferred to the Supreme Court.
                   </p>
                 </div>
               </div>
