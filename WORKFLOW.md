@@ -55,7 +55,7 @@ flowchart TD
 
 ### Workflow 1: Citizen e-FIR Lodging & Tracking
 1. **Initiation:** Citizen navigates to the public portal and clicks **"Register e-FIR"**.
-2. **Step 1: Complainant Identification:** Enters full name, phone number, email address, Aadhaar/ID proof type, and residential address.
+2. **Step 1: Complainant Identification (Aadhaar Act 2016 Compliant):** Enters full name, phone number (OTP verified), email address, and official ID proof. In compliance with the **Aadhaar Act, 2016** and UIDAI circulars, raw 12-digit Aadhaar numbers are never collected; users provide masked Aadhaar (last 4 digits: `XXXX-XXXX-1234`) or alternate national IDs (Voter ID, DL, Passport, PAN).
 3. **Step 2: Incident Classification & Jurisdictional Selection:**
    - Selects State (e.g. *Uttar Pradesh*), District (e.g. *Lucknow*), and territorial Police Station (from 1,900+ UP directory, expandable to all 36 States & UTs).
    - Selects incident category (*Cyber Crime, Theft, Physical Assault, Financial Fraud, etc.*).
@@ -134,10 +134,12 @@ flowchart TD
 | `under_investigation` | IO records witness examination (Sec 180) | Investigating Officer | `under_investigation` | `WITNESS_STATEMENT_RECORDED_SEC180` |
 | `under_investigation` | IO submits evidence document | Investigating Officer | `under_investigation` | `DOCUMENT_EVIDENCE_UPLOADED` |
 | `under_investigation` | IO files Final Charge Sheet (Sec 193) | Investigating Officer | `in_trial` | `POLICE_CHARGE_SHEET_FORWARDED_TO_COURT` |
-| `in_trial` | Case transferred to Special Agency | Trial / High Court Judge | `in_trial` (Agency Custody) | `CASE_AGENCY_TRANSFER_INITIATED` |
+| `in_trial` | Case transferred to Special Agency | Trial / High Court Judge | `in_trial` (Agency Custody)* | `CASE_AGENCY_TRANSFER_INITIATED` |
 | `in_trial` | Evidence revoked under statutory authority | Judge | `in_trial` | `JUDGE_EVIDENCE_REVOKED` |
 | `in_trial` | Judge pronounces final verdict | Judge | `disposed` | `JUDICIAL_JUDGEMENT_PRONOUNCED` |
 | `disposed` | Appeal filed in High Court | Legal Counsel / Judge | `appealed` | `HIGH_COURT_APPEAL_ADMITTED` |
+
+*\*Note on State Persistence: `"in_trial (Agency Custody)"` is an operational descriptor surfaced in the UI via `case_agency_transfers` while the underlying database enum retains `in_trial` for schema consistency with PostgreSQL enum constraints.*
 
 ---
 

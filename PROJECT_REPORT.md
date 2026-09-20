@@ -100,7 +100,8 @@ The platform eliminates systemic delay, evidence tampering, and jurisdictional f
 ## 4. Key Functional Modules & Implementation Details
 
 ### 4.1. Citizen e-FIR Inward Desk & Zero FIR Handover (Sec 173(1) BNSS)
-- **3-Step Filing Wizard:** Citizens provide incident classification, geographical jurisdiction selection (seeded with 1,900+ Uttar Pradesh stations across all 75 districts, expandable to all 36 States & UTs nationally), suspect descriptions, and incident particulars.
+- **3-Step Filing Wizard & Aadhaar Act, 2016 Compliance:** Citizens provide incident classification, geographical jurisdiction selection (seeded with 1,900+ Uttar Pradesh stations across all 75 districts, expandable to all 36 States & UTs nationally), suspect descriptions, and incident particulars. In strict compliance with the **Aadhaar Act, 2016** and UIDAI circulars, raw 12-digit Aadhaar numbers are never collected or stored; only masked Aadhaar (last 4 digits e.g., `XXXX-XXXX-1234`) or alternate national IDs (Voter ID, DL, Passport, PAN) are accepted.
+- **Unauthenticated e-FIR RLS Policy:** PostgreSQL Row-Level Security explicitly permits unauthenticated citizens (`auth.uid() IS NULL` or `case_category = 'Criminal (e-FIR)'`) to lodge e-FIRs directly without login friction, immediately generating a public receipt while protecting judicial dossiers.
 - **Client-Side SHA-256 Docket Hashing:** Upon filing, the Web Crypto API generates a unique SHA-256 cryptographic checksum embedded into the citizen's printable statutory receipt.
 - **Zero FIR Territorial Handover:** If registered at Station A for an incident occurring under Station B's jurisdiction, Station A executes an instant digital Zero FIR Transfer under BNSS Section 173(1), transmitting the electronic case file, generating a statutory handover memo, and updating both stations' active and transferred rosters.
 
@@ -121,7 +122,7 @@ The platform eliminates systemic delay, evidence tampering, and jurisdictional f
 ### 4.5. Inter-Agency Jurisdictional Transfer (CBI, NIA, ED, CID, SFIO)
 - Trial Courts and High Courts can order investigation transfer to specialized national/state enforcement agencies.
 - The system generates a cryptographically secure **Single-Use Master Transfer Token** (e.g. `TRF-CBI-XXXX-YYYY`).
-- Appointed Agency Administrators claim custody through the portal, transferring investigative authority to the agency headquarters while preserving the preceding chain of custody.
+- Appointed Agency Administrators claim custody through the portal, transferring investigative authority to the agency headquarters while preserving the preceding chain of custody (tracked operationally as Agency Custody via `case_agency_transfers` while maintaining the core `in_trial` database state).
 
 ---
 

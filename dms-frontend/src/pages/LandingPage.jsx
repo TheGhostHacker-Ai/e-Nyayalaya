@@ -122,6 +122,7 @@ export default function LandingPage({ onLogin }) {
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const [idProofType, setIdProofType] = useState('Aadhaar (Last 4 Digits Only)');
   const [idProof, setIdProof] = useState('');
 
   // e-FIR Form Fields: Incident & Location
@@ -301,7 +302,7 @@ Lodge Timestamp: ${nowTimestamp}
 • Verified Mobile: +91-${mobile} (OTP Verified)
 • Email Address: ${email || 'N/A'}
 • Permanent Address: ${address.trim()}
-• Identity Proof: ${idProof.trim() || 'Aadhaar / Official ID Verified'}
+• Identity Proof: ${idProofType.includes('Aadhaar') ? `Masked Aadhaar (XXXX-XXXX-${idProof.trim()})` : `${idProofType}: ${idProof.trim()}`}
 
 2. INCIDENT & LOCATIONAL PARTICULARS:
 • Date & Time of Occurrence: ${incidentDateTime}
@@ -1431,9 +1432,35 @@ Tamper-Evident SHA-256 Fingerprint Recorded in e-Courts National Grid.`;
                     <textarea className="gov-input" rows="2" required value={address} onChange={e => setAddress(e.target.value)} placeholder="House/Flat, Street, Landmark, Pin Code" />
                   </div>
 
-                  <div className="gov-form-group">
-                    <label className="gov-form-label">Aadhaar / Official ID Proof Number</label>
-                    <input type="text" className="gov-input" value={idProof} onChange={e => setIdProof(e.target.value)} placeholder="XXXX-XXXX-XXXX" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div className="gov-form-group">
+                      <label className="gov-form-label">Identity Proof Document Type</label>
+                      <select className="gov-input" value={idProofType} onChange={e => { setIdProofType(e.target.value); setIdProof(''); }}>
+                        <option value="Aadhaar (Last 4 Digits Only)">Masked Aadhaar (Last 4 Digits)</option>
+                        <option value="Voter ID Card (EPIC)">Voter ID Card (EPIC)</option>
+                        <option value="Driving Licence">Driving Licence (DL)</option>
+                        <option value="Passport Number">Indian Passport</option>
+                        <option value="PAN Card">PAN Card</option>
+                      </select>
+                    </div>
+                    <div className="gov-form-group">
+                      <label className="gov-form-label">
+                        {idProofType.includes('Aadhaar') ? 'Last 4 Digits of Aadhaar *' : 'ID Document Number'}
+                      </label>
+                      <input 
+                        type="text" 
+                        className="gov-input" 
+                        maxLength={idProofType.includes('Aadhaar') ? "4" : "20"} 
+                        value={idProof} 
+                        onChange={e => setIdProof(idProofType.includes('Aadhaar') ? e.target.value.replace(/\D/g, '') : e.target.value.toUpperCase())} 
+                        placeholder={idProofType.includes('Aadhaar') ? "e.g. 5678 (XXXX-XXXX-5678)" : "Enter ID number"} 
+                      />
+                      {idProofType.includes('Aadhaar') && (
+                        <span style={{ fontSize: '0.72rem', color: 'var(--ink-soft)' }}>
+                          🔒 In compliance with Aadhaar Act 2016 & UIDAI guidelines, raw 12-digit Aadhaar is never collected or stored.
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <button type="submit" className="gov-btn-maroon" style={{ width: '100%', justifyContent: 'center' }}>
