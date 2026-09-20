@@ -278,6 +278,20 @@ export default function Dashboard({ user }) {
             console.warn("Police participant query fallback:", pErr);
           }
 
+          // Also fetch cases where this officer or station performed an audit action (e.g. transfer/filing)
+          try {
+            const { data: auditData } = await supabase
+              .from('audit_log')
+              .select('case_id')
+              .eq('actor_id', user.id);
+            if (auditData) {
+              const auditIds = auditData.map(a => a.case_id).filter(Boolean);
+              allowedIds = [...new Set([...allowedIds, ...auditIds])];
+            }
+          } catch (aErr) {
+            console.warn("Audit logs case query fallback:", aErr);
+          }
+
           let pQuery = supabase
             .from('cases')
             .select(`*, filed_by_profile:profiles!cases_filed_by_fkey(full_name, designation), police_org:organisations!cases_police_org_id_fkey(id, name, district, state, code), court_org:organisations!cases_court_org_id_fkey(id, name, district, state, code)`);
@@ -321,22 +335,51 @@ export default function Dashboard({ user }) {
           console.warn("Organisations list fetch warning:", orgEx);
         }
         
-        // Fetch transfer details for appealed cases
-        const appealedCaseIds = fetchedCases.filter(c => c.stage === 'appealed').map(c => c.id);
-        if (appealedCaseIds.length > 0) {
+        // Fetch transfer details for appealed and transferred cases
+        const transferTrackIds = fetchedCases
+          .filter(c => c.stage === 'appealed' || c.stage === 'transferred' || c.stage === 'in_trial' || (c.case_number && c.case_number.includes('EFIR')))
+          .map(c => c.id);
+
+        if (transferTrackIds.length > 0) {
           try {
-            const { data: appealsData, error: appealsError } = await supabase.rpc('get_bulk_transfer_details', { cids: appealedCaseIds });
+            const { data: appealsData, error: appealsError } = await supabase.rpc('get_bulk_transfer_details', { cids: transferTrackIds });
             if (appealsData && !appealsError) {
               fetchedCases = fetchedCases.map(c => {
-                 if (c.stage === 'appealed') {
-                    const ap = appealsData.find(a => a.case_id === c.id);
-                    if (ap) return { ...c, transferDetails: ap };
-                 }
-                 return c;
+                const ap = appealsData.find(a => a.case_id === c.id);
+                if (ap) return { ...c, transferDetails: ap };
+                return c;
               });
             }
           } catch (e) {
             console.warn("Appeals bulk fetch fallback:", e);
+          }
+
+          try {
+            const { data: transferDocs } = await supabase
+              .from('documents')
+              .select('case_id, title, ai_summary, ocr_text, created_at')
+              .in('case_id', transferTrackIds)
+              .or('doc_type.eq.police_report,doc_type.eq.charge_sheet,doc_type.eq.investigation_record')
+              .order('created_at', { ascending: false });
+
+            if (transferDocs && transferDocs.length > 0) {
+              fetchedCases = fetchedCases.map(c => {
+                const doc = transferDocs.find(d => d.case_id === c.id && (d.title.includes('TRANSFER') || d.title.includes('HANDOVER') || d.title.includes('CHARGE SHEET')));
+                if (doc && !c.transferDetails) {
+                  return {
+                    ...c,
+                    transferDetails: {
+                      to_station: doc.title,
+                      summary: doc.ai_summary,
+                      transferred_at: doc.created_at
+                    }
+                  };
+                }
+                return c;
+              });
+            }
+          } catch (tErr) {
+            console.warn("Transfer docs fetch fallback:", tErr);
           }
         }
         
@@ -570,17 +613,31 @@ ${assignedOfficerDirective}`;
           }
         }
 
-        // 1. Update Case police_org_id & district
+        // 1. Update Case police_org_id, district, state & stage to 'transferred'
         const { error: cErr } = await supabase
           .from('cases')
           .update({ 
             police_org_id: resolvedTargetOrgId, 
             district: transferDistrict,
-            stage: 'fir_registered' 
+            state: transferState || 'Uttar Pradesh',
+            stage: 'transferred' 
           })
           .eq('id', targetCaseId);
 
         if (cErr) throw cErr;
+
+        // Record participant so transferring officer/station always retains access in transferred view
+        if (user?.id) {
+          try {
+            await supabase.from('case_participants').upsert([{
+              case_id: targetCaseId,
+              user_id: user.id,
+              role_in_case: 'transferring_officer'
+            }]);
+          } catch (pErr) {
+            console.warn("Participant recording error:", pErr);
+          }
+        }
 
         // 2. Insert Transfer Document
         const transferNarrative = `ZERO FIR / JURISDICTIONAL HANDOVER ORDER (BNSS SEC 173(1))
@@ -611,6 +668,7 @@ OFFICIAL ACTION: Case docket and digital evidence grid transmitted to receiving 
         // 3. Insert Audit Log
         await supabase.from('audit_log').insert([{
           case_id: targetCaseId,
+          actor_id: user?.id,
           action: 'ZERO_FIR_STATION_TRANSFERRED',
           metadata: {
             efir_number: efirNum,
@@ -624,9 +682,24 @@ OFFICIAL ACTION: Case docket and digital evidence grid transmitted to receiving 
           record_hash: docHash
         }]);
 
-        // Update local state: remove from current station view if filtered by org
-        setCases(prev => prev.filter(c => c.id !== targetCaseId));
-        setEfirActionSuccessMsg(`e-FIR ${efirNum} successfully transferred under Zero FIR to ${cleanTargetName} (${transferDistrict}, ${transferState}). Handover memo recorded.`);
+        // 4. Update local state with stage: 'transferred' and transfer details so it shows in Transferred section
+        setCases(prev => prev.map(c => c.id === targetCaseId ? {
+          ...c,
+          stage: 'transferred',
+          police_org_id: resolvedTargetOrgId,
+          district: transferDistrict,
+          state: transferState,
+          transferDetails: {
+            to_station: cleanTargetName,
+            receiving_district: transferDistrict,
+            receiving_state: transferState,
+            transferred_at: nowIso,
+            summary: `Transferred under Zero FIR to ${cleanTargetName} (${transferDistrict})`,
+            reason: stationTransferReason
+          }
+        } : c));
+
+        setEfirActionSuccessMsg(`e-FIR ${efirNum} successfully transferred under Zero FIR to ${cleanTargetName} (${transferDistrict}, ${transferState}). Transferred roster updated.`);
 
       } else if (efirActionType === 'court_forward') {
         if (!targetCourtOrgId) throw new Error("Please select a target Judicial Magistrate / District Court.");

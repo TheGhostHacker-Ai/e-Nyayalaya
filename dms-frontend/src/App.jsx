@@ -12,7 +12,6 @@ import CourtSessions from './pages/CourtSessions';
 import GigwHeader from './components/GigwHeader';
 import GigwFooter from './components/GigwFooter';
 import LandingPage from './pages/LandingPage';
-import { DEMO_ROLES, loginWithDemoRole } from './constants/demoRoles';
 
 function Sidebar({ user, onLogout, isOpen, onClose }) {
   const location = useLocation();
@@ -148,9 +147,8 @@ function Sidebar({ user, onLogout, isOpen, onClose }) {
   );
 }
 
-function Topbar({ user, onToggleSidebar, onSwitchRole }) {
+function Topbar({ user, onToggleSidebar }) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [showRoleMenu, setShowRoleMenu] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -216,58 +214,8 @@ function Topbar({ user, onToggleSidebar, onSwitchRole }) {
         </div>
       </div>
 
-      {/* Live Clock, Role Switcher & Date Badge */}
+      {/* Live Clock & Date Badge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-        {/* Quick Role Switcher */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowRoleMenu(prev => !prev)}
-            className="btn-secondary"
-            style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem', borderColor: 'var(--accent)', color: 'var(--accent)', fontWeight: 700, background: '#FAF5E8' }}
-            title="Click to instantly switch between Judge, Police SHO, IO, High Court, Agency & Counsel roles"
-          >
-            ⚡ Switch Role
-          </button>
-
-          {showRoleMenu && (
-            <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '0.4rem', background: '#FFFFFF', border: '1px solid var(--line)', borderRadius: '2px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', width: '280px', zIndex: 9999, overflow: 'hidden' }}>
-              <div style={{ padding: '0.5rem 0.75rem', background: '#FAF9F6', borderBottom: '1px solid var(--line)', fontSize: '0.72rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase' }}>
-                Instant Evaluator Role Switch
-              </div>
-              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                {DEMO_ROLES.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => {
-                      setShowRoleMenu(false);
-                      if (onSwitchRole) onSwitchRole(d);
-                    }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '0.65rem 0.85rem',
-                      background: user?.role === d.role && (user?.designation === d.profile.designation || user?.org_type === d.profile.org_type) ? '#FAF5E8' : '#FFFFFF',
-                      border: 'none',
-                      borderBottom: '1px solid #F0EFEA',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.15rem'
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: '0.82rem', color: d.badgeColor }}>
-                      {d.shortLabel}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--ink-soft)' }}>
-                      {d.sublabel}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', background: '#EFECE6', border: '1px solid var(--line)', padding: '0.25rem 0.65rem', borderRadius: '2px' }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--bg-band)', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
             🕒 {formattedTime}
@@ -481,13 +429,6 @@ function AppContent() {
     }
   };
 
-  const handleSwitchDemoRole = async (demoRole) => {
-    setLoadingSession(true);
-    const profile = await loginWithDemoRole(demoRole, supabase);
-    setUser(profile);
-    setLoadingSession(false);
-  };
-
   useEffect(() => {
     let isMounted = true;
 
@@ -612,7 +553,6 @@ function AppContent() {
           <Topbar 
             user={user} 
             onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-            onSwitchRole={handleSwitchDemoRole}
           />
           
           <main id="main-content" role="main" tabIndex="-1" style={{ padding: '1.5rem', flex: 1, maxWidth: '1400px', margin: '0 auto', width: '100%' }}>

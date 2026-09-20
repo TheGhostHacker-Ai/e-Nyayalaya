@@ -544,13 +544,23 @@ export default function CaseTimeline({ user }) {
 
           alert('Charge Sheet filed and Case successfully transferred to the selected Court for trial.');
         }
-      } else {
         // Police to Police transfer (Zero FIR / Territorial Handover)
         const targetStation = courts.find(c => c.id === selectedCourt);
         const { error: stationErr } = await supabase.from('cases').update({ 
-          police_org_id: selectedCourt
+          police_org_id: selectedCourt,
+          stage: 'transferred'
         }).eq('id', id);
         if (stationErr) throw stationErr;
+
+        if (user?.id) {
+          try {
+            await supabase.from('case_participants').upsert([{
+              case_id: id,
+              user_id: user.id,
+              role_in_case: 'transferring_officer'
+            }]);
+          } catch (pErr) {}
+        }
 
         try {
           const transferHash = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('');

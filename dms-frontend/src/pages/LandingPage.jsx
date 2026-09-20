@@ -18,7 +18,6 @@ import {
   getPoliceStationsForDistrict, 
   normalizeStationName 
 } from '../constants/policeStations';
-import { DEMO_ROLES, loginWithDemoRole } from '../constants/demoRoles';
 
 async function sha256Hex(message) {
   try {
@@ -39,18 +38,6 @@ export default function LandingPage({ onLogin }) {
   // Accessibility state
   const [fontScale, setFontScale] = useState(1);
   const [isHighContrast, setIsHighContrast] = useState(false);
-  const [demoLoadingRole, setDemoLoadingRole] = useState(null);
-
-  const handleDemoAccess = async (roleKey) => {
-    setDemoLoadingRole(roleKey);
-    try {
-      await loginWithDemoRole(roleKey, supabase, onLogin);
-    } catch (e) {
-      console.error('Demo login error:', e);
-    } finally {
-      setDemoLoadingRole(null);
-    }
-  };
 
   // Initialize accessibility preferences from localStorage
   useEffect(() => {
@@ -720,61 +707,6 @@ Tamper-Evident SHA-256 Fingerprint Recorded in e-Courts National Grid.`;
           <span>
             <strong>DEMONSTRATION BUILD:</strong> Smart India Hackathon (SIH 26190). Unified electronic case record grid connecting Police Stations, Trial Courts, High Courts, and Enforcement Agencies under BNSS 2023.
           </span>
-        </div>
-      </div>
-
-      {/* 5B. 1-Click Evaluator & Jury Quick Access Grid */}
-      <div style={{ background: 'linear-gradient(135deg, #0E2A47 0%, #163E66 100%)', color: '#FFFFFF', padding: '1rem 1.5rem', borderBottom: '2px solid #8A1E23' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ background: '#8A1E23', color: '#FFFFFF', padding: '0.2rem 0.6rem', fontSize: '0.72rem', fontWeight: 800, borderRadius: '2px', letterSpacing: '0.5px' }}>
-                EVALUATOR QUICK ACCESS
-              </span>
-              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#E2E8F0' }}>
-                1-Click Instant Demo Login (No Password / PIN Required)
-              </span>
-            </div>
-            <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
-              Select any official role to enter the secure portal immediately
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
-            {Object.entries(DEMO_ROLES).map(([key, roleObj]) => (
-              <button
-                key={key}
-                onClick={() => handleDemoAccess(key)}
-                disabled={demoLoadingRole !== null}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  borderRadius: '3px',
-                  padding: '0.6rem 0.75rem',
-                  color: '#FFFFFF',
-                  cursor: demoLoadingRole ? 'wait' : 'pointer',
-                  textAlign: 'left',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.15s ease',
-                  opacity: demoLoadingRole && demoLoadingRole !== key ? 0.6 : 1
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'; e.currentTarget.style.borderColor = '#FFFFFF'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)'; }}
-              >
-                <span style={{ fontSize: '1.2rem' }}>{roleObj.icon}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {demoLoadingRole === key ? 'Entering...' : roleObj.title}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: '#CBD5E1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {roleObj.cadre}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 
