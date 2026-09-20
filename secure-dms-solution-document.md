@@ -159,8 +159,8 @@ flowchart TB
 | Component | Technology |
 |---|---|
 | Prompt design & testing | **Google AI Studio** |
-| Production inference | Gemini API (via Vertex AI for enterprise SLAs, if required) |
-| OCR | Gemini multimodal vision, fallback to Tesseract for offline/low-connectivity edge cases |
+| Production inference | Gemini API (via Vertex AI / Google AI Studio for production SLAs) |
+| OCR | Google Gemini Multimodal Vision & OCR Engine |
 | Semantic search | Gemini text-embedding models |
 | Document classification | Fine-tuned prompt/few-shot classification via Gemini, or a lightweight on-device classifier (TensorFlow Lite) for offline triage |
 

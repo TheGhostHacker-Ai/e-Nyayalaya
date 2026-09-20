@@ -43,10 +43,15 @@ flowchart TD
     L -- No --> O[Trial Concludes: Judge Pronounces Judgement]
     O --> P[Immutable Judgement Hash Written to Ledger]
     
-    P --> Q{Appeal Filed by Counsel?}
+    P --> Q{Appeal Filed in High Court?}
     Q -- Yes --> R[High Court Appellate Bench Takes Case on Roster]
     R --> S[High Court Inspects Lower Court Electronic Record & Issues Decree]
-    Q -- No --> T([Case Disposed & Archived in Public Ledger])
+    S --> U{Apex Appeal to Supreme Court?}
+    U -- Yes --> V[Supreme Court of India Takes Apex Docket on Roster]
+    V --> W[Supreme Court Issues Final National Binding Decree]
+    W --> T([Case Disposed & Archived in Public Ledger])
+    U -- No --> T
+    Q -- No --> T
 ```
 
 ---
@@ -138,6 +143,7 @@ flowchart TD
 | `in_trial` | Evidence revoked under statutory authority | Judge | `in_trial` | `JUDGE_EVIDENCE_REVOKED` |
 | `in_trial` | Judge pronounces final verdict | Judge | `disposed` | `JUDICIAL_JUDGEMENT_PRONOUNCED` |
 | `disposed` | Appeal filed in High Court | Legal Counsel / Judge | `appealed` | `HIGH_COURT_APPEAL_ADMITTED` |
+| `appealed` / `disposed` | Apex Appeal filed in Supreme Court | Legal Counsel / Judge | `appealed` | `SUPREME_COURT_APPEAL_ADMITTED` |
 
 *\*Note on State Persistence: `"in_trial (Agency Custody)"` is an operational descriptor surfaced in the UI via `case_agency_transfers` while the underlying database enum retains `in_trial` for schema consistency with PostgreSQL enum constraints.*
 

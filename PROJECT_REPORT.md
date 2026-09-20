@@ -66,21 +66,22 @@ The platform eliminates systemic delay, evidence tampering, and jurisdictional f
  │   │  - IO Assignment      │──►│  - Charge Sheet Trial  │──►│  - Lower Bench Record Inspection      │   │
  │   │  - Witness Exam (S180)│   │  - Bail / Session Log  │   │  - Appellate Decree Generation        │   │
  │   │  - Evidence Lockbox   │   │  - Evidence Admissib.  │   │  - Judgement Hash Signing             │   │
- │   └───────────┬───────────┘   └───────────┬────────────┘   └───────────────────┬───────────────────┘   │
- │               │                           │                                    │                       │
- │               │                           │ (Court Transfer Order)             │ (HC Transfer Order)   │
- │               │                           ▼                                    ▼                       │
- │               │           ┌────────────────────────────────────────────────────┐                       │
- │               │           │         SPECIALIZED ENFORCEMENT HQ                 │                       │
- │               └──────────►│        (CBI / NIA / ED / CID / SFIO)               │                       │
- │                           │  - Single-Use Master Token Case Claim Custody      │                       │
- │                           └────────────────────────────────────────────────────┘                       │
- │                                                                ▲                                       │
- │   ┌────────────────────────────────────────────────────────┐   │ (Appellate Dossiers)                  │
- │   │              SUPREME COURT OF INDIA                    │───┘                                       │
- │   │  - National Registry & Apex Constitutional Precedents  │                                           │
- │   │  - Multi-State Appellate Verification (36 States & UTs)│                                           │
- │   └────────────────────────────────────────────────────────┘                                           │
+ │   └───────────────────────┘   └───────────┬────────────┘   └───────────────────┬───────────────────┘   │
+ │                                           │                                    │                       │
+ │                                           │ (Court Transfer Order)             │ (HC Transfer Order)   │
+ │                                           ▼                                    ▼                       │
+ │                               ┌────────────────────────────────────────────────────┐                   │
+ │                               │         SPECIALIZED ENFORCEMENT HQ                 │                   │
+ │                               │        (CBI / NIA / ED / CID / SFIO)               │                   │
+ │                               │  - Single-Use Master Token Case Claim Custody      │                   │
+ │                               └────────────────────────────────────────────────────┘                   │
+ │                                                                                        │ (Apex Appeal) │
+ │                                                                                        ▼               │
+ │   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+ │   │                                 SUPREME COURT OF INDIA                                         │   │
+ │   │  - National Apex Registry & Constitutional Precedents (36 States & Union Territories)          │   │
+ │   │  - Binding Final Appellate Decrees & Full Lower Bench Immutable Hash Verification              │   │
+ │   └────────────────────────────────────────────────────────────────────────────────────────────────┘   │
  │                                                                                                        │
  └────────────────────────────────────────────┬───────────────────────────────────────────────────────────┘
                                               │ Real-Time WebSocket & REST (RLS Protected)
