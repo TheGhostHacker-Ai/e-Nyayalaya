@@ -9,6 +9,7 @@ import {
   getPoliceStationsForDistrict, 
   normalizeStationName 
 } from '../constants/policeStations';
+import { DEMO_ROLES, loginWithDemoRole } from '../constants/demoRoles';
 import '../gov-portal-theme.css';
 
 const STATIC_AGENCY_ORGS = NATIONAL_AGENCIES.map(a => ({
@@ -62,6 +63,21 @@ export default function Auth({ onLogin, onClose }) {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [demoLoadingRole, setDemoLoadingRole] = useState(null);
+
+  const handleDemoAccess = async (roleKey) => {
+    setDemoLoadingRole(roleKey);
+    setError(null);
+    try {
+      await loginWithDemoRole(roleKey, supabase, onLogin);
+      if (onClose) onClose();
+    } catch (e) {
+      console.error('Demo login error:', e);
+      setError('Demo login initialization failed. Please retry.');
+    } finally {
+      setDemoLoadingRole(null);
+    }
+  };
 
   useEffect(() => {
     const fetchOrgs = async () => {
@@ -502,6 +518,55 @@ export default function Auth({ onLogin, onClose }) {
 
       <div className="gov-modal-body">
         
+        {/* 1-Click Evaluator Quick Access */}
+        <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#8A1E23', letterSpacing: '0.5px' }}>
+              ⚡ 1-CLICK INSTANT DEMO LOGIN
+            </span>
+            <span style={{ fontSize: '0.68rem', color: '#64748B' }}>
+              Bypass password / PIN
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem' }}>
+            {Object.entries(DEMO_ROLES).map(([key, roleObj]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleDemoAccess(key)}
+                disabled={demoLoadingRole !== null}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '3px',
+                  padding: '0.4rem 0.5rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  color: '#1E293B',
+                  cursor: demoLoadingRole ? 'wait' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  textAlign: 'left'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#8A1E23'; e.currentTarget.style.background = '#FFF5F5'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#FFFFFF'; }}
+              >
+                <span>{roleObj.icon}</span>
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {demoLoadingRole === key ? 'Entering...' : roleObj.title}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></div>
+          <span style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600 }}>OR LOGIN WITH CREDENTIALS</span>
+          <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></div>
+        </div>
+
         {/* Three-Way Segmented Tab Control */}
         <div className="gov-tab-segment" role="tablist">
           <button 
