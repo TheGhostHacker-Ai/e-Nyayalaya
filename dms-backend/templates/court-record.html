@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Official Court Record & Case Dossier</title>
+<link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111111;
+    --paper: #ffffff;
+    --rule: #000000;
+    --muted: #444444;
+    --serif: 'Tinos', 'Times New Roman', Times, 'Liberation Serif', serif;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    font-family: var(--serif);
+    color: var(--ink);
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .sheet {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 16mm 18mm 18mm;
+    position: relative;
+    background: #fff;
+  }
+
+  /* Header & Cause Title */
+  .court-header {
+    text-align: center;
+    border-bottom: 2.5pt double var(--rule);
+    padding-bottom: 4mm;
+    margin-bottom: 5mm;
+  }
+  .court-name {
+    font-weight: 700;
+    font-size: 14pt;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 0 0 1.5mm;
+  }
+  .court-sub {
+    font-size: 10.5pt;
+    line-height: 1.5;
+    margin: 0 0 1mm;
+  }
+  .case-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 10pt;
+    font-weight: 600;
+    margin-top: 2mm;
+    padding: 1.5mm 0;
+    border-top: 0.8pt solid #ccc;
+  }
+
+  /* Parties Table */
+  .parties {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11pt;
+    margin: 4mm 0 4mm;
+  }
+  .parties td { padding: 1.2mm 0; vertical-align: top; }
+  .parties .who { padding-left: 6mm; }
+  .parties .side { text-align: right; white-space: nowrap; font-weight: 700; }
+  .versus { text-align: center; font-weight: 700; font-style: italic; padding: 2mm 0; letter-spacing: .1em; }
+
+  .rule-single { border: 0; border-top: 1pt solid var(--rule); margin: 4mm 0; }
+
+  /* Section Headings */
+  .section-head {
+    font-size: 10.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 5mm 0 2.5mm;
+    padding-bottom: 1mm;
+    border-bottom: 1pt solid var(--rule);
+  }
+
+  /* Tables */
+  table.dossier-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin-bottom: 3mm;
+  }
+  table.dossier-table th {
+    background: #f0f0f0;
+    font-weight: 700;
+    text-align: left;
+    padding: 2mm 2.5mm;
+    border: 0.8pt solid var(--rule);
+    font-size: 9pt;
+    text-transform: uppercase;
+  }
+  table.dossier-table td {
+    padding: 2mm 2.5mm;
+    border: 0.8pt solid #bbb;
+    vertical-align: top;
+  }
+
+  /* Blocks */
+  .entry-box {
+    border: 0.8pt solid #000;
+    padding: 2.5mm 3mm;
+    margin-bottom: 2.5mm;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  .entry-box-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    border-bottom: 0.6pt solid #ccc;
+    padding-bottom: 1mm;
+    margin-bottom: 1.5mm;
+  }
+
+  .qna-box {
+    border-left: 2.5pt solid #1d4ed8;
+    padding-left: 2.5mm;
+    margin: 1.5mm 0;
+  }
+  .qna-box.cross {
+    border-left-color: #b91c1c;
+  }
+  .qna-item {
+    margin: 1mm 0;
+    padding-left: 2mm;
+    border-left: 0.5pt solid #ddd;
+  }
+
+  /* Operative / Verdict */
+  .operative-box {
+    border-top: 1.5pt solid var(--rule);
+    margin-top: 5mm;
+    padding-top: 3mm;
+    page-break-inside: avoid;
+  }
+  .verdict-banner {
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-size: 11.5pt;
+    margin: 3mm 0;
+  }
+
+  /* Attestation & Certificate */
+  .attest-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 8mm;
+    page-break-inside: avoid;
+  }
+  .court-seal {
+    width: 28mm;
+    height: 16mm;
+    border: 1pt solid #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7.5pt;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .sig-block {
+    text-align: right;
+    width: 60mm;
+  }
+  .sig-line {
+    border-top: 1pt solid var(--rule);
+    padding-top: 1.5mm;
+    font-weight: 700;
+  }
+
+  .certificate {
+    margin-top: 6mm;
+    border: 0.8pt solid var(--rule);
+    padding: 2.5mm 3.5mm;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    background: #fafafa;
+    page-break-inside: avoid;
+  }
+  .certificate h4 {
+    margin: 0 0 1.5mm;
+    font-size: 8.5pt;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+  .cert-grid {
+    display: grid;
+    grid-template-columns: 38mm 1fr;
+    gap: 1mm 3mm;
+    font-family: var(--mono);
+    font-size: 8pt;
+    word-break: break-all;
+  }
+
+  @page {
+    size: A4;
+    margin: 12mm 10mm 12mm 10mm;
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    .sheet {
+      width: auto;
+      min-height: auto;
+      margin: 0;
+      padding: 0;
+      page-break-after: auto;
+    }
+    .entry-box, table.dossier-table tr, .attest-grid, .certificate {
+      page-break-inside: avoid;
+    }
+    .section-head {
+      page-break-after: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <!-- COURT HEADER -->
+  <div class="court-header">
+    <div class="court-name">IN THE COURT OF {{court_name}}</div>
+    <div class="court-sub">e-Courts Integrated Judicial Management Grid &bull; National Capital Territory / State Jurisdiction</div>
+    <div class="case-meta-grid">
+      <div style="text-align: left;">
+        <div><b>Case No.:</b> {{case_number}}</div>
+        <div><b>CNR Number:</b> {{cnr_number}}</div>
+        <div><b>Filing Date:</b> {{filing_date}}</div>
+      </div>
+      <div style="text-align: right;">
+        <div><b>Police Station:</b> {{police_station}}</div>
+        <div><b>FIR / Case Diary:</b> {{fir_reference}}</div>
+        <div><b>Under Sections:</b> {{sections}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARTIES -->
+  <table class="parties">
+    <tbody>
+      <tr>
+        <td class="who"><b>State / {{complainant}}</b></td>
+        <td class="side">&hellip; Prosecution / Complainant</td>
+      </tr>
+      <tr>
+        <td colspan="2" class="versus">&mdash; VERSUS &mdash;</td>
+      </tr>
+      <tr>
+        <td class="who"><b>{{accused}}</b></td>
+        <td class="side">&hellip; Accused / Non-Applicant</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="rule-single">
+
+  <!-- 1. APPEARANCES -->
+  <div class="section-head">1. Judicial Bench &amp; Counsel Appearances</div>
+  <table class="dossier-table">
+    <tbody>
+      <tr>
+        <td style="width: 32%; font-weight: 700;">Presiding Judicial Officer</td>
+        <td>{{judge_name}}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Public Prosecutor / State</td>
+        <td>{{prosecutor_name}}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Defense Counsel / Advocate</td>
+        <td>{{defense_name}}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700;">Special Agency Lead &amp; IO</td>
+        <td>{{agency_lead_name}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 2. TRANSFERS & CHAIN OF CUSTODY -->
+  <div class="section-head">2. Case Transfer &amp; Appellate Jurisdiction Ledger</div>
+  {{transfers_html}}
+
+  <!-- 3. ORDER SHEETS & SESSIONS -->
+  <div class="section-head">3. Chronological Day-to-Day Proceedings &amp; Court Order Sheets</div>
+  {{sessions_html}}
+
+  <!-- 4. WITNESS DEPOSITIONS & Q&A TRANSCRIPTS -->
+  <div class="section-head">4. Sworn Witness Depositions &amp; Multi-Stage Questioning Transcripts</div>
+  {{witnesses_html}}
+
+  <!-- 5. DOCUMENTARY EXHIBITS -->
+  <div class="section-head">5. Documentary Exhibits &amp; Forensic Evidence Registry</div>
+  {{exhibits_html}}
+
+  <!-- 6. FINAL VERDICT -->
+  <div class="operative-box">
+    <div class="section-head" style="margin-top: 0; text-align: center;">6. Final Verdict &amp; Operative Judicial Order</div>
+    {{operative_html}}
+  </div>
+
+  <!-- ATTESTATION -->
+  <div class="attest-grid">
+    <div>
+      <div style="font-size: 8.5pt; color: #444; margin-bottom: 1.5mm;">Seal of the Presiding Court:</div>
+      <div class="court-seal">SEAL OF THE COURT</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-line">Presiding Judicial Officer</div>
+      <div style="font-size: 9pt; color: #222;">{{judge_signature_name}}</div>
+      <div style="font-size: 8pt; color: #555;">{{court_name}}</div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE OF ELECTRONIC RECORD -->
+  <div class="certificate">
+    <h4>&starf; Certificate of Electronic Judicial Record (Sec 65B IEA / Sec 63 BSA, 2023) &starf;</h4>
+    <div class="cert-grid">
+      <div>Case Record ID:</div><div>{{case_number}} (CNR: {{cnr_number}})</div>
+      <div>Ledger Hash:</div><div>{{sha256}}</div>
+      <div>Certified At:</div><div>{{certified_at}} (IST)</div>
+      <div>Issuing Registry:</div><div>Integrated Digital Court &amp; Evidence Repository (e-Nyayalaya DMS)</div>
+      <div>Audit Anchor:</div><div>{{audit_anchor}}</div>
+    </div>
+    <div style="font-style: italic; font-size: 7.5pt; margin-top: 2mm; text-align: center; color: #444;">
+      This electronic record is digitally verified, timestamped, and certified in accordance with Section 65B of the Indian Evidence Act, 1872 / Section 63 of the Bharatiya Sakshya Adhiniyam, 2023.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

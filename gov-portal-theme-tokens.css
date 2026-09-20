@@ -1,0 +1,157 @@
+/* ============================================================
+   e-Nyayalaya — Government Portal Theme Override
+   Drop this after your existing stylesheet, or replace the
+   equivalent Tailwind theme/CSS variables with these values.
+   ============================================================ */
+
+:root {
+  /* ---- BACKGROUND: flip from dark to light. This one change
+     does more than everything else combined. ---- */
+  --bg-page: #F7F8FA;          /* off-white, not pure #FFF — easier on the eyes at scale */
+  --bg-header: #0B2447;         /* deep navy — header/footer ONLY, not the whole page */
+  --bg-card: #FFFFFF;
+
+  /* ---- TEXT ---- */
+  --text-primary: #131B2E;      /* near-black navy, not pure black */
+  --text-secondary: #4A5568;
+  --text-on-dark: #F7F8FA;      /* for header/footer text on navy */
+
+  /* ---- ACCENT: pick ONE, use it sparingly ---- */
+  --accent: #B5322A;            /* restrained maroon-red — common on Indian gov portals */
+  --accent-hover: #932720;
+
+  /* ---- BORDERS: flat, thin, no glow ---- */
+  --border-default: #D8DCE3;
+  --border-strong: #0B2447;
+
+  /* ---- TYPOGRAPHY ----
+     Serif for headings reads as formal/official.
+     Clean grotesk for body copy stays readable at small sizes. */
+  --font-heading: 'Tinos', 'Noto Serif', 'Times New Roman', serif;
+  --font-body: 'Inter', 'Noto Sans', -apple-system, sans-serif;
+}
+
+/* ================= GLOBAL RESET ================= */
+body {
+  background: var(--bg-page) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* ================= HEADER =================
+   Keep the header/top-strip dark navy — that's the ONE place
+   dark background is appropriate, like a real gov portal band.
+   Everything below it should be light. */
+.top-bar, header {
+  background: var(--bg-header) !important;
+  color: var(--text-on-dark) !important;
+  box-shadow: none !important;
+}
+
+/* Logo: move away from "app icon" toward "crest" treatment */
+.logo-mark {
+  background: transparent !important;
+  border-radius: 50% !important;        /* circular, not rounded-square */
+  border: 2px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+
+/* Nav links */
+nav a {
+  color: var(--text-on-dark) !important;
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+}
+
+/* ================= HERO SECTION ================= */
+.hero-section {
+  background: var(--bg-page) !important;
+}
+
+.hero-badge {
+  background: #FFFFFF !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  /* de-emphasize — this should not be the loudest element on the page */
+}
+
+.hero-heading {
+  font-family: var(--font-heading) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  font-size: clamp(2rem, 4vw, 3rem) !important;  /* smaller than the current huge display size */
+  letter-spacing: normal !important;
+}
+
+.hero-heading .accent-text {
+  color: var(--accent) !important;
+  /* remove any gradient-text effect here */
+  -webkit-text-fill-color: unset !important;
+  background: none !important;
+}
+
+.hero-subtext {
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 1.05rem !important;
+}
+
+/* ================= BUTTONS =================
+   Flat, solid, no gradient, no glow. */
+.btn-primary {
+  background: var(--accent) !important;
+  background-image: none !important;     /* kill any gradient */
+  color: #FFFFFF !important;
+  border-radius: 4px !important;         /* sharper corners, not full-pill */
+  box-shadow: none !important;
+  filter: none !important;               /* kill any drop-shadow glow */
+  border: none !important;
+  font-weight: 600 !important;
+}
+.btn-primary:hover {
+  background: var(--accent-hover) !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary {
+  background: #FFFFFF !important;
+  color: var(--text-primary) !important;
+  border: 1.5px solid var(--border-strong) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+/* Explicitly strip any glow/neon effects wherever they're applied */
+.glow, .btn-glow, [class*="glow"] {
+  box-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+/* ================= CARDS ================= */
+.feature-card, .stat-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+/* Remove colored glowing left-borders — replace with a plain,
+   thin, solid accent border if you want per-card distinction */
+.feature-card::before, .stat-card::before {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  background: var(--bg-header) !important;
+  color: var(--text-on-dark) !important;
+}
+
+/* ================= FOCUS STATES (accessibility — do not remove) ================= */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}

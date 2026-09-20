@@ -1,0 +1,628 @@
+/* ============================================================
+   e-Nyayalaya — Government of India Judicial Grid Design System
+   Global Core Styling & Layout (GIGW 3.0 & DBIM Compliant)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  /* Official Government of India Judicial Palette */
+  --bg: #F4F3EF;              /* Page background — crisp off-white */
+  --bg-dark: #F4F3EF;         /* Backwards-compatibility alias */
+  --bg-band: #0E2A47;         /* Navy header/footer bar */
+  --paper: #FFFFFF;           /* Cards, modals, containers */
+  --surface-dark: #FFFFFF;    /* Backwards-compatibility alias */
+  --surface-border: #D6D2C4;  /* Thin, crisp paper border */
+  --line: #D6D2C4;
+  --line-soft: #EAE6DB;
+  
+  --ink: #1B2230;             /* Body text */
+  --text-primary: #1B2230;    /* Backwards-compatibility alias */
+  --ink-soft: #4B5566;        /* Subtext / captions */
+  --text-secondary: #4B5566;  /* Backwards-compatibility alias */
+  
+  --accent: #8A1E23;          /* Judicial Maroon */
+  --accent-primary: #8A1E23;  /* Backwards-compatibility alias */
+  --accent-hover: #70181C;
+  --accent-glow: rgba(138, 30, 35, 0.15);
+  
+  --gold: #C59B27;
+  --focus: #1B5FB3;           /* Mandatory focus indicator */
+  
+  --success: #138808;         /* Ashoka Green */
+  --error: #A31D1D;           /* Deep Red */
+  --danger: #A31D1D;
+  --warning: #B45309;         /* Warm Amber */
+  
+  /* Typography */
+  --font-heading: 'Tinos', 'Noto Serif', Georgia, serif;
+  --font-body: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-scale: 1;
+}
+
+/* Accessibility Focus Indicator */
+a:focus-visible, 
+button:focus-visible, 
+input:focus-visible, 
+select:focus-visible, 
+textarea:focus-visible {
+  outline: 2px solid var(--focus) !important;
+  outline-offset: 2px !important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.5;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, .serif-heading {
+  font-family: var(--font-heading);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+h1 { font-size: 1.85rem; line-height: 1.25; }
+h2 { font-size: 1.4rem; line-height: 1.3; }
+h3 { font-size: 1.15rem; line-height: 1.35; }
+h4 { font-size: 1rem; line-height: 1.4; }
+
+p {
+  color: var(--ink);
+}
+
+/* Replaces neon text gradient with authoritative Judicial maroon/navy title */
+.title-glow {
+  color: var(--bg-band);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Official Government Card Container (Replaces Glassmorphism) */
+.glass-panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.glass-header {
+  background: var(--bg-band);
+  color: #FFFFFF;
+  border-bottom: 2px solid var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Official Buttons */
+.btn-primary {
+  background: var(--accent);
+  color: #FFFFFF;
+  border: 1px solid var(--accent);
+  padding: 0.55rem 1.25rem;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.55rem 1.25rem;
+  border-radius: 2px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #EAE6DB;
+  border-color: #BDB9AD;
+}
+
+/* Official Form Elements */
+.input-field {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 0.55rem 0.85rem;
+  border-radius: 2px;
+  width: 100%;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px rgba(27, 95, 179, 0.2);
+}
+
+.input-field::placeholder {
+  color: #8C887B;
+}
+
+select.input-field {
+  background-color: var(--paper);
+  cursor: pointer;
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Professional Official App Layout */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 42px);
+  background: var(--bg);
+  position: relative;
+}
+
+/* Light Official Government Sidebar */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.85rem;
+  z-index: 50;
+  overflow-y: auto;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-nav {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 500;
+  font-size: 0.88rem;
+}
+
+.nav-link:hover {
+  background: #EFECE6;
+  color: var(--accent);
+}
+
+.nav-link.active {
+  background: #EAE6DB;
+  color: var(--accent);
+  border-color: #D6D2C4;
+  font-weight: 600;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  gap: 1rem;
+}
+
+/* Numbered Block Cards for High Court Districts & Supreme Court States */
+.numbered-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.numbered-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 2px;
+  padding: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.numbered-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.numbered-badge {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--bg-band);
+  background: #E8ECEF;
+  border: 1px solid #CCD4DC;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* Mobile Sidebar Drawer Overlay */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 42, 71, 0.5);
+  z-index: 45;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Status Badges */
+.badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-block;
+}
+
+.badge-success { background: #E6F4EA; color: #137333; border: 1px solid #CEEAD6; }
+.badge-warning { background: #FEF7E0; color: #B06000; border: 1px solid #FEEFC3; }
+.badge-error { background: #FCE8E6; color: #C5221F; border: 1px solid #FAD2CF; }
+
+/* Micro Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: slideUpFade 0.25s ease-out forwards;
+}
+
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+
+/* Print Utilities */
+.print-only { display: none; }
+
+/* Print Layout Optimization */
+@media print {
+  @page { margin: 1cm; }
+  body, html { background: white !important; color: black !important; }
+  .app-layout { height: auto !important; overflow: visible !important; display: block !important; }
+  .sidebar, .topbar, .no-print { display: none !important; }
+  .main-content { 
+    height: auto !important; 
+    overflow: visible !important; 
+    padding: 0 !important; 
+    display: block !important; 
+  }
+  .glass-panel, .timeline-item { 
+    border: 1px solid #000 !important; 
+    background: transparent !important; 
+    box-shadow: none !important; 
+    backdrop-filter: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 2rem !important;
+    padding: 1.5rem !important;
+  }
+  .badge { border: 1px solid #000 !important; color: black !important; background: transparent !important; font-weight: bold !important; padding: 4px 8px !important; }
+  * { color: black !important; text-shadow: none !important; }
+  
+  h1, h2, h3, h4 { page-break-after: avoid; font-family: serif !important; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  
+  .print-header {
+    display: block !important;
+    text-align: center;
+    border-bottom: 3px double #000;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    font-family: serif !important;
+  }
+  .print-header h1 {
+    font-size: 24pt;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .print-header p {
+    font-size: 12pt;
+    margin: 0.5rem 0 0 0;
+  }
+  .print-only { display: block !important; }
+  .screen-only { display: none !important; }
+  .tamper-badge {
+    border: 2px solid #000 !important;
+    font-family: monospace;
+    font-size: 9pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    float: right;
+    padding: 0.25rem 0.5rem;
+  }
+  .timeline-date {
+    font-weight: bold;
+    border-bottom: 1px dashed #000;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* --- INDIAN COURT TEMPLATE CSS --- */
+  :root {
+    --rule: #000;
+    --serif: 'Tinos', 'Times New Roman', Times, 'Liberation Serif', serif;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+  .print-only { font-family: var(--serif) !important; color: #000 !important; }
+  .court-name { text-align: center; font-weight: 700; font-size: 13.5pt; line-height: 1.5; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 2mm; }
+  .court-sub { text-align: center; font-size: 11.5pt; line-height: 1.75; margin: 0; }
+  .rule-double { border: 0; border-top: 1.6pt solid var(--rule); border-bottom: .6pt solid var(--rule); height: 3px; margin: 5mm 0 6mm; }
+  .rule-single { border: 0; border-top: .6pt solid var(--rule); margin: 5mm 0; }
+  .parties { width: 100%; border-collapse: collapse; font-size: 12pt; margin: 0 0 4mm; }
+  .parties td { padding: 1.2mm 0; vertical-align: top; border: none !important; }
+  .parties .who { padding-left: 14mm; }
+  .parties .side { text-align: right; white-space: nowrap; }
+  .versus { text-align: center; font-weight: 700; font-style: italic; padding: 2.5mm 0; letter-spacing: .08em; }
+  .meta { font-size: 11.5pt; line-height: 1.85; margin: 0 0 5mm; }
+  .meta b { font-weight: 700; }
+  .section-head { font-size: 11pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin: 7mm 0 3mm; padding-bottom: 1mm; border-bottom: .6pt solid var(--rule); }
+  ol.body { margin: 0; padding: 0; list-style: none; counter-reset: para; }
+  ol.body > li { counter-increment: para; position: relative; padding-left: 12mm; margin: 0 0 4.5mm; font-size: 12pt; line-height: 1.75; text-align: justify; text-justify: inter-word; }
+  ol.body > li::before { content: counter(para) "."; position: absolute; left: 0; top: 0; width: 10mm; text-align: right; font-variant-numeric: tabular-nums; }
+  .exh { font-style: italic; }
+  .operative { margin: 6mm 0 0; padding: 4mm 0 0; border-top: .6pt solid var(--rule); font-size: 12pt; line-height: 1.8; text-align: justify; }
+  .operative .lead { font-style: italic; }
+  .verdict-line { text-align: center; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 12.5pt; margin: 5mm 0; }
+  .next-date { margin-top: 4mm; font-weight: 700; }
+  .attest { margin-top: 16mm; text-align: right; font-size: 11.5pt; line-height: 1.7; }
+  .sig-space { height: 16mm; }
+  .sig-rule { display: inline-block; border-top: .6pt solid var(--rule); min-width: 62mm; padding-top: 1.5mm; }
+  .attest .name { font-weight: 700; }
+  .certificate { margin-top: 12mm; border: .6pt solid var(--rule); padding: 4mm 5mm; font-size: 9.5pt; line-height: 1.6; }
+  .certificate h4 { margin: 0 0 2.5mm; font-size: 9.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
+  .certificate dl { margin: 0; display: grid; grid-template-columns: 42mm 1fr; gap: 1.2mm 4mm; }
+  .certificate dt { margin: 0; }
+  .certificate dd { margin: 0; font-family: var(--mono); font-size: 8.5pt; word-break: break-all; }
+  .certificate .note { margin: 3mm 0 0; font-style: italic; font-size: 9pt; }
+}
+
+/* ==========================================================================
+   GIGW 3.0 (GUIDELINES FOR INDIAN GOVERNMENT WEBSITES) STYLES
+   ========================================================================== */
+
+.gigw-header-container {
+  background: var(--bg-band);
+  border-bottom: 2px solid var(--accent);
+  position: relative;
+  z-index: 1000;
+}
+
+.gigw-skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: var(--accent);
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 2px;
+  z-index: 99999;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.gigw-skip-link:focus {
+  top: 10px;
+  outline: 2px solid #FFFFFF;
+}
+
+.gigw-tricolor-stripe {
+  display: flex;
+  width: 100%;
+}
+
+.gigw-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.gigw-tool-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.15s ease;
+}
+
+.gigw-tool-btn:hover, .gigw-tool-btn.active {
+  background: var(--accent);
+  color: #FFFFFF;
+  border-color: var(--accent);
+}
+
+.gigw-font-resizer {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.gigw-footer-container {
+  background: var(--bg-band);
+  border-top: 3px solid var(--accent);
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  margin-top: auto;
+  color: #FFFFFF;
+}
+
+.gigw-footer-top {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gigw-footer-link {
+  background: none;
+  border: none;
+  color: #CCD4DC;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.gigw-footer-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.gigw-divider {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+}
+
+/* High Contrast Mode for GIGW Compliance */
+.gigw-high-contrast {
+  --bg: #000000 !important;
+  --bg-dark: #000000 !important;
+  --bg-band: #000000 !important;
+  --surface-dark: #121212 !important;
+  --paper: #121212 !important;
+  --surface-border: #FFFFFF !important;
+  --line: #FFFFFF !important;
+  --text-primary: #FFFFFF !important;
+  --ink: #FFFFFF !important;
+  --text-secondary: #FFFF00 !important;
+  --ink-soft: #FFFF00 !important;
+  --accent-primary: #FFFF00 !important;
+  --accent: #FFFF00 !important;
+  --focus: #00FFFF !important;
+}
+
+.gigw-high-contrast .glass-panel,
+.gigw-high-contrast .sidebar,
+.gigw-high-contrast .topbar {
+  background: #000000 !important;
+  border-color: #FFFFFF !important;
+}
+
+.gigw-high-contrast button,
+.gigw-high-contrast a,
+.gigw-high-contrast input,
+.gigw-high-contrast select {
+  border-color: #FFFF00 !important;
+  color: #FFFF00 !important;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
