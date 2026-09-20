@@ -60,28 +60,24 @@ The platform eliminates systemic delay, evidence tampering, and jurisdictional f
  │                                   e-NYAYALAYA CENTRAL DATA GRID                                        │
  ├────────────────────────────────────────────────────────────────────────────────────────────────────────┤
  │                                                                                                        │
- │   ┌───────────────────────┐   ┌────────────────────────┐   ┌───────────────────────────────────────┐   │
- │   │  POLICE INVESTIGATION │   │  TRIAL & DISTRICT CRT  │   │      HIGH COURT (APPELLATE BENCH)     │   │
- │   │  - Zero FIR Routing   │   │  - Cognizance Review   │   │  - Direct Appeal Records Inward       │   │
- │   │  - IO Assignment      │──►│  - Charge Sheet Trial  │──►│  - Lower Bench Record Inspection      │   │
- │   │  - Witness Exam (S180)│   │  - Bail / Session Log  │   │  - Appellate Decree Generation        │   │
- │   │  - Evidence Lockbox   │   │  - Evidence Admissib.  │   │  - Judgement Hash Signing             │   │
- │   └───────────────────────┘   └───────────┬────────────┘   └───────────────────┬───────────────────┘   │
- │                                           │                                    │                       │
- │                                           │ (Court Transfer Order)             │ (HC Transfer Order)   │
- │                                           ▼                                    ▼                       │
- │                               ┌────────────────────────────────────────────────────┐                   │
- │                               │         SPECIALIZED ENFORCEMENT HQ                 │                   │
- │                               │        (CBI / NIA / ED / CID / SFIO)               │                   │
- │                               │  - Single-Use Master Token Case Claim Custody      │                   │
- │                               └────────────────────────────────────────────────────┘                   │
- │                                                                                        │ (Apex Appeal) │
- │                                                                                        ▼               │
- │   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐   │
- │   │                                 SUPREME COURT OF INDIA                                         │   │
- │   │  - National Apex Registry & Constitutional Precedents (36 States & Union Territories)          │   │
- │   │  - Binding Final Appellate Decrees & Full Lower Bench Immutable Hash Verification              │   │
- │   └────────────────────────────────────────────────────────────────────────────────────────────────┘   │
+ │  ┌─────────────────┐       ┌─────────────────┐       ┌──────────────────┐       ┌──────────────────┐   │
+ │  │     POLICE      │       │ TRIAL & DISTRICT│       │    HIGH COURT    │       │  SUPREME COURT   │   │
+ │  │  INVESTIGATION  │──────►│      COURT      │──────►│ (APPELLATE BENCH)│──────►│  OF INDIA (APEX) │   │
+ │  │ - Zero FIR Route│(Sec193│ - Cognizance    │(Appeal│ - Appeal Review  │(Apex  │ - Apex Decrees   │   │
+ │  │ - IO Witness Dep│Charge │ - Trial & Bail  │Record)│ - Lower Bench Ver│Appeal)│ - 36 States & UTs│   │
+ │  │ - Gemini Vision │Sheet) │ - Evidence Mgmt │       │ - Decree Signing │       │ - Precedent Repo │   │
+ │  └─────────────────┘       └────────┬────────┘       └────────┬─────────┘       └──────────────────┘   │
+ │                                     │                         │                                        │
+ │                         (Court Transfer Order)        (HC Transfer Order)                              │
+ │                                     │                         │                                        │
+ │                                     ▼                         ▼                                        │
+ │                          ┌───────────────────────────────────────────────┐                             │
+ │                          │          SPECIALIZED ENFORCEMENT HQ           │                             │
+ │                          │         (CBI / NIA / ED / CID / SFIO)         │                             │
+ │                          │  - Claims Single-Use Master Transfer Token    │                             │
+ │                          │  - Conducts Independent Agency Investigation  │                             │
+ │                          │  - Returns Report to Originating Court        │                             │
+ │                          └───────────────────────────────────────────────┘                             │
  │                                                                                                        │
  └────────────────────────────────────────────┬───────────────────────────────────────────────────────────┘
                                               │ Real-Time WebSocket & REST (RLS Protected)

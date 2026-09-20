@@ -37,8 +37,9 @@ flowchart TD
     
     K --> L{Special Agency Transfer Ordered?}
     L -- Yes (High Court / Trial Court Order) --> M[Generate Single-Use Master Transfer Token]
-    M --> N[CBI / NIA / ED Lead Claims Case via Token]
-    N --> G
+    M --> N[CBI / NIA / ED Claims Custody via Token & Investigates]
+    N --> N1[Agency Submits Supplementary Report to Originating Court]
+    N1 --> K
     
     L -- No --> O[Trial Concludes: Judge Pronounces Judgement]
     O --> P[Immutable Judgement Hash Written to Ledger]
